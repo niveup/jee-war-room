@@ -158,19 +158,30 @@ with tab3:
         st.metric("Avg Total", f"{df['Total'].mean():.1f}")
 
 # --- TAB 4: FOCUS (AI) ---
+# --- TAB 4: FOCUS (AI) ---
 with tab4:
     st.subheader("🧠 AI Question Bank")
+    
+    # Debugging: Print the key status (First 4 chars only to keep it safe)
+    if "GEMINI_API_KEY" in st.secrets:
+        masked_key = st.secrets["GEMINI_API_KEY"][:4] + "..."
+        st.caption(f"Debug: Key loaded starting with {masked_key}")
+    
     if st.button("Ask Gemini AI"):
         if ai_available:
             try:
+                # Try the Flash model first
                 model = genai.GenerativeModel('gemini-1.5-flash')
                 resp = model.generate_content("Give me 1 hard JEE Mains Physics question (Topic: Mechanics). Just the question.")
+                
                 st.info(resp.text)
                 with st.expander("Show Answer"):
                     resp2 = model.generate_content(f"What is the answer to: {resp.text}")
                     st.write(resp2.text)
-            except:
-                st.error("AI Error")
+            except Exception as e:
+                # THIS WILL SHOW THE REAL ERROR
+                st.error(f"Detailed Error: {e}")
         else:
             st.warning("Connect API Key first")
+
 
